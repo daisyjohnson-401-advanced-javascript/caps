@@ -1,11 +1,22 @@
 {
   "name": "caps",
   "version": "1.0.0",
-  "description": "",
+  "description": "### Setup Running the app ```  npm start  npm i  ``` ### Tests ```  npm test  ```",
   "main": "caps.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "faker": "^5.1.0",
+    "fsevents": "^2.1.3",
+    "jest": "^26.4.2",
+    "node": "^14.8.0",
+    "nodemon": "^2.0.4"
+  },
+  "devDependencies": {},
   "scripts": {
-    "test": "jest --verbose --coverage",
-    "test-watch": "jest --watchAll --verbose --coverage"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node caps.js"
   },
   "repository": {
     "type": "git",
@@ -17,15 +28,5 @@
   "bugs": {
     "url": "https://github.com/daisyjohnson-401-advanced-javascript/caps/issues"
   },
-  "homepage": "https://github.com/daisyjohnson-401-advanced-javascript/caps#readme",
-  "dependencies": {
-    "faker": "^5.1.0",
-    "jest": "^26.4.2",
-    "node": "^14.8.0",
-    "nodemon": "^2.0.4"
-  },
-  "directories": {
-    "lib": "lib"
-  },
-  "devDependencies": {}
+  "homepage": "https://github.com/daisyjohnson-401-advanced-javascript/caps#readme"
 }
