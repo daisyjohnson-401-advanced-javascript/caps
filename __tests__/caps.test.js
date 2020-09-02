@@ -9,7 +9,7 @@ const delivery = {
   address: '123 Nowhere Lane',
 };
 
-it('should log pickup', () => {
+it.skip('should log pickup', () => {
 
   console.log = jest.fn();
 
@@ -21,7 +21,7 @@ it('should log pickup', () => {
 
 });
 
-it('should log in-transit', () => {
+it.skip('should log in-transit', () => {
 
   console.log = jest.fn();
 
@@ -31,7 +31,7 @@ it('should log in-transit', () => {
 
 });
 
-it('should log delivered', () => {
+it.skip('should log delivered', () => {
 
   console.log = jest.fn();
 

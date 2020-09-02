@@ -1,22 +1,16 @@
 'use strict';
 
 const net = require('net');
+require('dotenv').config();
 
 const port = process.env.PORT || 3000;
-const server = net.createServer();
 
+const server = net.createServer();
+//Accept inbound TCP connections on a declared port
 server.listen(port, () => console.log(`Server up on ${port}`));
 
-/*
+//On new connections, add the client to the connection pool
 
-Accept inbound TCP connections on a declared port
-On new connections, add the client to the connection pool
-On incoming data from a client
-Read and parse the incoming data/payload
-Verify that the data is legitimate
-Is it a JSON object with both an event and payload properties?
-If the payload is ok, broadcast the raw data back out to each of the other connected clients
-*/
 //Creates a pool of connected clients
 let socketPool = {};
 
@@ -29,11 +23,12 @@ server.on('connection', (socket) => {
   // WHEN EVENTS COME IN VERIFY DATA IS LEGIT PARSE IT
   socket.on('data', (buffer) => dispatchEvent(buffer));
 
+  socket.on('end', (e) => { delete socketPool[id]; });
 
 
 });
 
-server,on('error', (e) => {
+server.on('error', (e) => {
   console.error('SERVER ERROR', e.message);
 });
 
@@ -41,6 +36,7 @@ function dispatchEvent(buffer) {
   let message = JSON.parse(buffer.toString().trim());
 
   broadcast(message);
+  logIt(message);
 }
 
 //If the payload is ok, broadcast the raw data back out to each of the other connected clients
@@ -50,6 +46,24 @@ function broadcast(message){
     socketPool[socket].write(payload);
   }
 }
+
+
+// LOG IT METHOD
+
+function logIt(message){
+  const messageThing = JSON.parse(message);
+
+  const eventThing = messageThing.event;
+  const time = new Date();
+  const payload = messageThing.payload;
+
+
+  console.log('EVENT', {event: eventThing, time, payload});
+};
+
+
+
+module.exports = server;
 // const events = require("../lib/events");
 
 // // CURRYING

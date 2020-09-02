@@ -12,7 +12,7 @@ const delivery = {
   address: '123 Nowhere Lane'
 };
 
-describe('handle pick up event', () => {
+describe,skip('handle pick up event', () => {
 
   it('should emit in-transit event at right time', () => {
 

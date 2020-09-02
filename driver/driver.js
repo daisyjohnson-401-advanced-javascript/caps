@@ -1,56 +1,62 @@
 'use strict';
 
-/*
-Connect to the CAPS server
-Listen for the data event coming in from the CAPS server
-When data arrives, parse it (it should be JSON) and look for the event property and begin processing…
-If the event is called pickup
-Simulate picking up the package
-Wait 1 second
-Log “picking up id” to the console
-Create a message object with the following keys:
-event - ‘in-transit’
-payload - the payload from the data object you just received
-Write that message (as a string) to the CAPS server
-Simulate delivering the package
-Wait 3 seconds
-Create a message object with the following keys:
-event - ‘delivered’
-payload - the payload from the data object you just received
-Write that message (as a string) to the CAPS server
-*/
+const net = require('net');
+require('dotenv').config();
 
-const emitter = require('../lib/events.js');
+const client = new net.Socket();
 
-// monitor pickup for event
-emitter.on('pickup', inTransitHandler);
-emitter.on('in-transit', deliveredHandler);
-
-function inTransitHandler(order){
-
-// WAIT 1 SECOND
-setTimeout(() => {
-
-  console.log(`DRIVER: picked up ${order.orderID}`);
-//Log “DRIVER: picked up [ORDER_ID]” to the console.
-//Emit an ‘in-transit’ event with the payload you received
-
-  emitter.emit('in-transit', order);
-}, 1000);
-
-}
+//Connect to the CAPS server
+const host = 'localhost';
+const port = 3000;
+client.connect(port, host, () => {
+  console.log(`Connected to ${host} : ${port}`);
+});
 
 
+// Listen for the data event coming in from the CAPS server
+//When data arrives, parse it (it should be JSON) and look for the event property and begin processing…
+client.on('data', function (data) {
 
-function deliveredHandler(delivery) {
-  // AFTER 3 SECONDS
-setTimeout(() => {
+  let event = JSON.parse(data);
+console.log('EVENT OBJECT PAYLOAD', event.payload);
+  //If the event is called pickup
+  //Simulate picking up the package
+  if (event.event === 'pickup') {
 
-//Log “delivered” to the console
-//Emit a ‘delivered’ event with the same payload
-console.log(`DRIVER: delivered ${delivery.orderID}`);
- emitter.emit('delivered', delivery); 
-}, 5000);
+    let id = event.orderID;
+    let payload = event.payload;
+    // WAIT 1 SECOND
+    setTimeout(() => {
+      // Log “picking up id” to the console
+      console.log(`Picking up ${id}`);
 
-}
+      //Create a message object with the following keys:
+      //event - ‘in-transit’
+      //payload - the payload from the data object you just received
+      let event = JSON.stringify({ event: 'in-transit', payload});
 
+      //Write that message (as a string) to the CAPS server
+      client.write(event);
+    }, 1000);
+
+    //Simulate delivering the package
+    //Wait 3 seconds
+    setTimeout(() => {
+      let payload = event.payload;
+//Create a message object with the following keys:
+//event - ‘delivered’
+//payload - the payload from the data object you just received
+//Write that message (as a string) to the CAPS server
+      console.log(`Delivering ${event.orderID}`);
+      let message = JSON.stringify({event:'delivered', payload});
+
+      client.write(message);
+    }, 3000);
+  }
+})
+
+// const emitter = require('../lib/events.js');
+
+// // monitor pickup for event
+// emitter.on('pickup', inTransitHandler);
+// emitter.on('in-transit', deliveredHandler);
