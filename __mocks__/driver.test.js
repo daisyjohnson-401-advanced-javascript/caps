@@ -1,5 +1,6 @@
-const driver = require('../apps/driver.js');
-const emitter = require('../lib/events.js');
+require('../driver');
+let client = require('socket.io-client');
+let socket = client.connect();
 
 jest.useFakeTimers();
 
@@ -12,7 +13,7 @@ const delivery = {
   address: '123 Nowhere Lane'
 };
 
-describe,skip('handle pick up event', () => {
+describe('handle pick up event', () => {
 
   it('should emit in-transit event at right time', () => {
 
@@ -20,13 +21,13 @@ describe,skip('handle pick up event', () => {
 
     const inTransitHandler = jest.fn();
 
-    emitter.on('in-transit', inTransitHandler);
+    socket.on('in-transit', inTransitHandler);
 
-    emitter.emit('pickup', delivery);
+    socket.emit('pickup', delivery);
 
     expect(inTransitHandler).toHaveBeenCalledTimes(0);
 
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(2000);
 
     expect(inTransitHandler).toHaveBeenCalledTimes(1);
 
@@ -40,18 +41,19 @@ describe,skip('handle pick up event', () => {
 
     const deliveredHandler = jest.fn();
 
-    emitter.on('in-transit', deliveredHandler);
+    socket.on('delivered', deliveredHandler);
 
-    emitter.emit('pickup', delivery);
+    socket.emit('pickup', delivery);
 
     expect(deliveredHandler).toHaveBeenCalledTimes(0);
 
-    jest.advanceTimersByTime(5000);
+    jest.advanceTimersByTime(3000);
 
     expect(deliveredHandler).toHaveBeenCalledTimes(1);
 
-    // WARNING: notice the "Last" in method name
-    expect(console.log).toHaveBeenLastCalledWith(`DRIVER: picked up ${delivery.orderID}`);
+    // Notice the "Last" in method name
+    expect(console.log).toHaveBeenLastCalledWith(`DRIVER: delivered ${delivery.orderID}`);
 
   });
 });
+
