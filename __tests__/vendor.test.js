@@ -1,19 +1,20 @@
 const vendor = require('../vendor/vendor.js');
-const emitter = require('../lib/events.js');
+let client = require('socket.io-client');
+let socket = client.connect();
 
 jest.useFakeTimers();
 
-it.skip('should receive delivery politely', () => {
+it('should receive delivery politely', () => {
   console.log = jest.fn();
-  emitter.emit('delivered', { orderID : '1234' });
-  expect(console.log).toHaveBeenCalledWith('VENDOR: Thank you for delivering 1234');
+  socket.emit('delivered', { orderID : '1234' });
+  expect(console.log).toHaveBeenCalledWith('Thank you for delivering 1234');
 });
 
-it.skip('should emit order', () => {
+it('should emit order', () => {
 
   const callback = jest.fn();
 
-  emitter.on('pickup', callback);
+  socket.on('pickup', callback);
 
   expect(callback).not.toBeCalled();
 

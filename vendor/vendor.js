@@ -1,62 +1,30 @@
 'use strict';
 
-const net = require('net');
-const socket = net.Socket();
-const faker = require('faker');
 require('dotenv').config();
 
-const client = new net.Socket();
+const faker = require('faker');
 
-//Connect to the CAPS server
-const host = 'localhost';
-const port = 3000;
-client.connect(port, host, () => {
-  console.log(`Connected to ${host} : ${port}`);
-});
+const io = require('socket.io-client');
+
+const vendorSocket = io.connect('http://localhost:3000/caps');
+
+vendorSocket.emit('join', process.env.STORE_NAME);
 
 
-//Every 5 seconds, simulate a new customer order
-// let storeName = '1-206-flowers';
 setInterval(() => {
-//Create an order object with your store name, order id, customer name, address
-//HINT: Have some fun by using the faker library to make up phony information
-
   const order = {
     time: faker.date.recent(),
     store: process.env.STORE_NAME,
     orderID: faker.random.number(),
-    customer: `${faker.name.firstName()},${faker.name.lastName()}`,
+    customer: `${faker.name.firstName()} ${faker.name.lastName()}`,
     address: `${faker.address.streetAddress()},${faker.address.city()},${faker.address.stateAbbr()}`,
   };
 
-  //Create a message object with the following keys:
-  //event - ‘pickup’
-  //payload - the order object you created in the above step
-  let event = (JSON.stringify({ event: 'pickup', content: order }));
-  //Write that message (as a string) to the CAPS server
-  client.write(event);
-
+  vendorSocket.emit('pickup', order);
 }, 5000);
 
-//Listen for the data event coming in from the CAPS server
-//When data arrives, parse it (it should be JSON) and look for the event property
-client.on('data', function (data) {
-  let jsonPayload = JSON.parse(data);
-  //Whenever the ‘delivered’ event occurs
-  //Log “thank you” to the console
-  if (jsonPayload.event === 'delivered') {
 
 
-    console.log(
-      `Thank you for delivering ${payload.orderID}`
-    )
-    //Ignore any data that specifies a different event
-  };
-})
-
-socket.on('data', (payload) => {
-  let stringPayload = Buffer.from(payload).toString();
-  const jsonPayload = JSON.parse(stringPayload);
-})
-
-// }
+vendorSocket.on('delivered', (payload) => {
+  console.log(`Thank you for delivering ${payload.orderID}`);
+});
