@@ -1,4 +1,4 @@
-const driver = require('../driver/driver.js');
+require('../driver');
 let client = require('socket.io-client');
 let socket = client.connect();
 
