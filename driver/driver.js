@@ -2,21 +2,24 @@
 
 const io = require('socket.io-client');
 
+const socket = io.connect('http://localhost:3000/caps');
 
-const driverSocket = io.connect('http://localhost:3000/caps');
+socket.emit('getall');
 
-driverSocket.on('pickup', (payload) => {
+socket.on('pickup', (payload) => {
+
+  socket.emit('received', payload.orderID)
 // WAIT 1 SECOND
     setTimeout(() => {
      console.log(`DRIVER: picked up ${payload.orderID}`);
-      driverSocket.emit('in-transit', payload);
-    }, 1500);
+     socket.emit('in-transit', payload);
+    }, 2000);
 
     //Wait 3 seconds
     setTimeout(() => {
 //Write that message (as a string) to the CAPS server
       console.log(`DRIVER: delivered ${payload.orderID}`);
-      driverSocket.emit('delivered', payload);
+      socket.emit('delivered', payload);
     }, 3000);
 
 });
